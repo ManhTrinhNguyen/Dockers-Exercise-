@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mysql:
+    image: mysql
+    restart: always
+    ports: 
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=test-db
+      - MYSQL_USER=tim 
+      - MYSQL_PASSWORD=password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    container_name: mysql
+  phpmyadin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8083:80
+    depends_on:
+      - "mysql"
+    environment:
+      - PMA_HOST=mysql
+    container_name: phpmyadmin
+
+volumes:
+  mysql-data:
+    driver: local 
+
+ 
