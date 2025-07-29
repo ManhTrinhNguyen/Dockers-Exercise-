@@ -6,13 +6,18 @@ services:
     ports: 
       - 3306:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=test-db
-      - MYSQL_USER=tim 
-      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PWD}
     volumes:
       - mysql-data:/var/lib/mysql
     container_name: mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   phpmyadin:
     image: phpmyadmin
     restart: always
@@ -23,6 +28,18 @@ services:
     environment:
       - PMA_HOST=mysql
     container_name: phpmyadmin
+  java-gradle:
+    image: nguyenmanhtrinh/demo-app:java-gradle
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - "mysql"
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PWD=${DB_PWD}
+      - DB_SERVER=${DB_SERVER}
+      - DB_NAME=${DB_NAME}
 
 volumes:
   mysql-data:
